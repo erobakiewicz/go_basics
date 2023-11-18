@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	// import helper package from helper folder we need to specify the path to the package
+	"booking_app/helper"
 )
 
 var conferenceName string = "2023 Go Conference"
@@ -10,7 +13,8 @@ var conferenceName string = "2023 Go Conference"
 // using := is the same as var conferenceName string = "Conference Name"
 const conferenceTickets int = 50
 
-var remainingTickets int = 50
+// to make function available to be exported it has to start with capital letter
+var RemainingTickets int = 50
 
 // Slice in Go is dynamic array, it can grow and shrink
 var ListOfBookings = []string{} // empty slice of strings
@@ -26,7 +30,7 @@ func main() {
 	for {
 
 		userFirstName, userLastName, userEmail, numberOfTickets := getUserInput()
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(userFirstName, userLastName, userEmail, numberOfTickets)
+		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(userFirstName, userLastName, userEmail, numberOfTickets, RemainingTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
 
@@ -35,7 +39,7 @@ func main() {
 			firstNames := getFirstNames()
 			fmt.Printf("People registered are: %v\n", strings.Join(firstNames, ", "))
 
-			var noTicketsRemaining bool = remainingTickets == 0
+			var noTicketsRemaining bool = RemainingTickets == 0
 			if noTicketsRemaining {
 				fmt.Println("The conference is now fully booked.")
 				break
@@ -49,7 +53,7 @@ func main() {
 				fmt.Println("Please enter a valid email.")
 			}
 			if !isValidTicketNumber {
-				fmt.Printf("Please enter a valid number of tickets. There are only %v tickets remaining.\n", remainingTickets)
+				fmt.Printf("Please enter a valid number of tickets. There are only %v tickets remaining.\n", RemainingTickets)
 			}
 		}
 	}
@@ -58,7 +62,7 @@ func main() {
 
 func greetUsers() {
 	fmt.Printf("Conference name is %v \n", conferenceName)
-	fmt.Printf("Welcome to conference! There are still %v tickets available.\n", remainingTickets)
+	fmt.Printf("Welcome to conference! There are still %v tickets available.\n", RemainingTickets)
 }
 
 func getFirstNames() []string {
@@ -72,15 +76,6 @@ func getFirstNames() []string {
 		firstNames = append(firstNames, names[0])
 	}
 	return firstNames
-}
-
-func validateUserInput(userFirstName string, userLastName string, userEmail string, numberOfTickets int) (bool, bool, bool) {
-	// in Go function can return multiple values
-	var isValidName bool = len(userFirstName) > 0 && len(userLastName) > 0
-	var isValidEmail bool = len(userEmail) > 0 && strings.Contains(userEmail, "@")
-	var isValidTicketNumber bool = numberOfTickets > 0
-
-	return isValidName, isValidEmail, isValidTicketNumber
 }
 
 func getUserInput() (string, string, string, int) {
@@ -109,9 +104,9 @@ func getUserInput() (string, string, string, int) {
 
 func bookTicket(numberOfTickets int, userFirstName string, userLastName string) {
 	// save name to slice
-	remainingTickets = remainingTickets - numberOfTickets
+	RemainingTickets = RemainingTickets - numberOfTickets
 	ListOfBookings = append(ListOfBookings, userFirstName+" "+userLastName)
 
-	fmt.Printf("There are now %v tickets remaining.\n", remainingTickets)
+	fmt.Printf("There are now %v tickets remaining.\n", RemainingTickets)
 	fmt.Printf("There are %v people registered for the conference.\n", len(ListOfBookings))
 }
